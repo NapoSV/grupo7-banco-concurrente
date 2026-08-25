@@ -1,0 +1,27 @@
+# Build outputs
+target/
+build/
+out/
+bin/
+*.class
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Datos de simulación (regenerables)
+transacciones_finalizadas/*.dat
+!transacciones_finalizadas/.gitkeep
+
+# Logs
+*.log
