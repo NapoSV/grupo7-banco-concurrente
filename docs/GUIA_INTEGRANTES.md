@@ -1,26 +1,16 @@
-# Guía Paso a Paso — Semana 7 · Multibanco Concurrente (Grupo 7)
+# Guía de Integrantes — Semana 7 · Multibanco Concurrente (Grupo 7)
 
 **Universidad Evangélica de El Salvador** · Facultad de Ingeniería · **Programación II**
 **Facilitador:** Ing. Daniel Enrique Guevara Gómez
-**Deadline:** 🕛 **jueves 27/08/2026 a las 23:59**
+**Deadline duro:** jueves 27/08/2026 a las 23:59
 
 ---
 
-## 📖 Cómo usar esta guía
-
-1. Busca tu nombre en la **tabla de asignación** de abajo y haz clic en el enlace para saltar a tu tarea.
-2. Lee la explicación completa (**qué haces**, **por qué es importante**, **aplicación profesional**, **reaprovechamiento**).
-3. Copia el código de referencia en el archivo indicado. Puedes adaptarlo, pero **respeta las firmas públicas** para que el proyecto integre.
-4. Sigue los **comandos Git** exactos al final de tu sección.
-5. Avisa a Héctor por Teams cuando hayas hecho `push` — él abre la PR.
-
----
-
-## 🧭 Tabla de asignación
+## Tabla de asignación rápida
 
 | # | Integrante | Tarea | Ir a |
 |---|---|---|---|
-| 1 | LOPEZ RUIZ HECTOR NAPOLEON | `BankSimulation` + integración | [Tarea 1](#tarea-1--héctor-lópez) |
+| 1 | LOPEZ RUIZ HECTOR NAPOLEON | `BankSimulation.java` + integración | [Tarea 1](#tarea-1--héctor-lópez) |
 | 2 | VIGIL RAMIREZ ALEJANDRO ANTONIO | `Bank.java` | [Tarea 2](#tarea-2--alejandro-vigil) |
 | 3 | ORELLANA ROJAS BAYRON ALEXANDER | `Transaction.java` (abstracta) | [Tarea 3](#tarea-3--bayron-orellana) |
 | 4 | DIAZ SANTOS ZAIR BENETT | `LocalWithdraw.java` | [Tarea 4](#tarea-4--zair-díaz) |
@@ -28,45 +18,176 @@
 | 6 | MELGAR RIVAS WILLIAM ARIEL | `LocalDeposit.java` | [Tarea 6](#tarea-6--william-melgar) |
 | 7 | MERINO VENTURA ALEJANDRO SEBASTIAN | `BankAccount.java` | [Tarea 7](#tarea-7--alejandro-merino) |
 | 8 | FUENTES ORTIZ ERIKA ALEXANDRA | Pruebas unitarias JUnit 5 | [Tarea 8](#tarea-8--erika-fuentes) |
-| 9 | VASQUEZ AMAYA WALTER AMILCAR | `DaoTransaction` + `MovementsViewer` (Swing) | [Tarea 9](#tarea-9--walter-vásquez) |
+| 9 | VASQUEZ AMAYA WALTER AMILCAR | `DaoTransaction` + `MovementsViewer` | [Tarea 9](#tarea-9--walter-vásquez) |
 | 10 | VENTURA VELASQUEZ CARLOS MARIO | `InterBankTransfer` + `LocalTransfer` | [Tarea 10](#tarea-10--carlos-ventura) |
-| 11 | SANCHEZ MENJIVAR NICOLE NOHEMY | `Receipt` + `Client` | [Tarea 11](#tarea-11--nicole-sánchez) |
+| 11 | SANCHEZ MENJIVAR NICOLE NOHEMY | `Receipt.java` + `Client.java` | [Tarea 11](#tarea-11--nicole-sánchez) |
 
 ---
 
-## 📏 Reglas para todo el equipo (léelas antes de empezar)
+## Reglas del equipo (léelas antes de empezar)
 
-- **Java 21+ obligatorio** (Temurin/OpenJDK). Verifica con `java -version`.
-- **Package raíz obligatorio:** `com.sv.grupo7.banco` (no lo cambies).
-- **Nunca hagas merge** a `develop` ni a `main` — solo push a tu rama `feature/tarea-NN-<apellido>`. Las PRs las abre **Héctor**.
-- **Respeta las firmas públicas** (constructor y métodos `public`) del código de referencia — el resto del equipo depende de ellas.
-- No agregues secretos, contraseñas, IPs internas ni datos personales.
-- Comentarios en español; nombres de variables en inglés (convención Java).
-- Antes de commit: **compila localmente** para verificar que tu archivo no rompe nada.
+- **Java 21+ obligatorio.** Verifica con `java -version` antes de abrir el IDE.
+- **Package raíz obligatorio:** `com.sv.grupo7.banco` — no lo cambies ni lo abrevies.
+- **Nunca hagas merge** a `develop` ni a `main`. Solo haz push a tu rama `feature/tarea-NN-apellido`. Las PRs las abre **Héctor**.
+- **Respeta las firmas públicas** (constructor y métodos `public`) del código de referencia — el resto del equipo depende de ellas para integrar.
+- No incluyas contraseñas, IPs, datos personales ni información sensible en el código.
+- Antes de hacer commit: asegúrate de que tu archivo no tiene errores de sintaxis.
 
 ---
 
-## 🌿 Comandos Git base (aplican a todos)
+## PASOS GENERALES (sigue este orden — aplica a todos)
+
+### Paso 1 — Verifica que tienes Java 21+
+
+Abre Git Bash, PowerShell o la terminal de tu IDE y corre:
 
 ```bash
-# Una sola vez: clonar el repo
-git clone https://github.com/NapoSV/grupo7-banco-concurrente.git TareaS7_Banco
-cd TareaS7_Banco
+java -version
+```
 
-# Cada vez que empieces a trabajar
+Debe mostrar algo como `openjdk version "21"` o `java version "21"`. Si el número es menor a 21, descarga e instala JDK 21 desde:
+**https://adoptium.net/** → selecciona Java 21 · JDK · tu sistema operativo (Windows x64 si usas Windows de 64 bits).
+
+---
+
+### Paso 2 — Verifica que tienes Git instalado
+
+```bash
+git --version
+```
+
+Debe mostrar `git version 2.x.x` o superior. Si no tienes Git: **https://git-scm.com/download/**
+
+---
+
+### Paso 3 — Acepta la invitación al repositorio
+
+Revisa tu correo (el que registraste en GitHub) o ve directamente a:
+**https://github.com/NapoSV/grupo7-banco-concurrente/invitations**
+
+Acepta la invitación. Sin esto no podrás hacer `push` a tu rama.
+
+---
+
+### Paso 4 — Clona el repositorio
+
+Abre Git Bash en la carpeta donde quieras trabajar (por ejemplo, tu escritorio o `Documentos/`) y corre:
+
+```bash
+git clone https://github.com/NapoSV/grupo7-banco-concurrente.git TareaS7_Banco
+```
+
+Esto crea una carpeta llamada `TareaS7_Banco` con todo el repositorio adentro. Espera a que termine (debe decir algo como `Resolving deltas: 100%`).
+
+---
+
+### Paso 5 — Entra a la carpeta del proyecto
+
+```bash
+cd TareaS7_Banco
+```
+
+---
+
+### Paso 6 — Cambia a la rama `develop` y descarga lo último
+
+```bash
 git checkout develop
 git pull origin develop
-git checkout -b feature/tarea-NN-<tu-apellido>   # ej. feature/tarea-04-diaz
-
-# ... editas tu archivo ...
-
-# Commit y push
-git add <ruta/de/tu/archivo>
-git commit -m "feat(tareaNN): <descripción corta>"
-git push -u origin feature/tarea-NN-<tu-apellido>
-
-# Avisa a Héctor por Teams para que abra la PR
 ```
+
+> **¿Por qué `develop` y no `main`?** La rama `develop` es donde está la estructura de carpetas actualizada. Al hacer `git checkout develop` verás la carpeta `src/` con todos los subpaquetes listos para que trabajes.
+
+Después de esto deberías ver esta estructura de carpetas en tu proyecto:
+
+```
+TareaS7_Banco/
+├── docs/
+│   ├── GUIA_INTEGRANTES.md          ← esta guía
+│   └── asignacion_tareas_grupo7.csv
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       └── com/sv/grupo7/banco/
+│   │           ├── abstraction/     ← Tarea 3 (Bayron)
+│   │           ├── controller/      ← Tarea 1 (Héctor) + Tarea 9 (Walter V.)
+│   │           ├── dao/             ← Tarea 9 (Walter V.)
+│   │           ├── entities/        ← Tareas 2, 7 y 11
+│   │           ├── implementation/  ← Tareas 4, 6 y 10
+│   │           ├── interfaces/      ← Tarea 9 (Walter V.)
+│   │           └── shared/
+│   └── test/
+│       └── java/
+│           └── com/sv/grupo7/banco/ ← Tareas 8 y 9
+├── transacciones_finalizadas/       ← se llena cuando corre la simulación
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+> **Si no ves la carpeta `src/`:** corre `git pull origin develop` de nuevo y verifica que el prompt diga `develop` (no `main`).
+
+---
+
+### Paso 7 — Abre el proyecto en tu IDE
+
+**Opción A — IntelliJ IDEA Community (recomendado):**
+1. Abre IntelliJ IDEA.
+2. Menú `File → Open`.
+3. Navega y selecciona la carpeta `TareaS7_Banco` (la carpeta completa, no un archivo).
+4. Clic en `OK`.
+5. Si pregunta "Trust and Open Project?", clic en `Trust Project`.
+6. En el panel izquierdo (Project), expande `src → main → java → com → sv → grupo7 → banco` para ver los subpaquetes.
+
+**Opción B — VS Code con Extension Pack for Java:**
+1. Menú `File → Open Folder`.
+2. Selecciona la carpeta `TareaS7_Banco`.
+3. Si VS Code pregunta si confías en la carpeta → clic en `Yes, I trust the authors`.
+4. En el panel Explorer (izquierda), expande `src/main/java/com/sv/grupo7/banco/` para ver los subpaquetes.
+
+---
+
+### Paso 8 — Crea tu rama personal de trabajo
+
+Sustituye `NN` por tu número de tarea y `apellido` por tu primer apellido en minúsculas:
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-NN-apellido
+```
+
+**Ejemplos exactos según tarea:**
+| Tarea | Comando exacto |
+|---|---|
+| 2 — Alejandro Vigil | `git checkout -b feature/tarea-02-vigil` |
+| 3 — Bayron Orellana | `git checkout -b feature/tarea-03-orellana` |
+| 4 — Zair Díaz | `git checkout -b feature/tarea-04-diaz` |
+| 5 — Walter Flores | `git checkout -b feature/tarea-05-flores` |
+| 6 — William Melgar | `git checkout -b feature/tarea-06-melgar` |
+| 7 — Alejandro Merino | `git checkout -b feature/tarea-07-merino` |
+| 8 — Erika Fuentes | `git checkout -b feature/tarea-08-fuentes` |
+| 9 — Walter Vásquez | `git checkout -b feature/tarea-09-vasquez` |
+| 10 — Carlos Ventura | `git checkout -b feature/tarea-10-ventura` |
+| 11 — Nicole Sánchez | `git checkout -b feature/tarea-11-sanchez` |
+
+---
+
+### Paso 9 — Ve a tu sección y sigue los pasos
+
+Haz clic en tu nombre en la tabla de asignación al principio del documento. Cada sección tiene pasos numerados específicos para tu tarea.
+
+---
+
+### Paso 10 — Avisa a Héctor cuando termines
+
+Cuando ya hayas hecho `push`, manda un mensaje en el chat del Grupo 7 en Teams:
+
+> "Héctor, listo la Tarea NN (`NombreDeClase.java`), ya hice push a `feature/tarea-NN-apellido`"
+
+Héctor abrirá la Pull Request. **No hagas merge tú mismo.**
+
+---
 
 ---
 
@@ -74,7 +195,7 @@ git push -u origin feature/tarea-NN-<tu-apellido>
 **CIF:** 2026010132 · **Archivo:** `src/main/java/com/sv/grupo7/banco/controller/BankSimulation.java`
 
 ### 🎯 Lo que te toca
-Escribir el **orquestador maestro** de la simulación: crear 3 bancos, ~20 clientes, distribuir cuentas entre ellos, generar un array de **100 transacciones aleatorias** de 4 tipos distintos, enviarlas a los `ExecutorService` de cada banco, recolectar los `Future<Receipt>`, persistirlos y mostrar la auditoría final. Además, tú te encargas de la **consolidación final** (mergear PRs, correr todo, empaquetar ZIP, exportar PDF).
+Escribir el **orquestador maestro** de la simulación: crear 3 bancos, ~20 clientes, distribuir cuentas entre ellos, generar un array de **100 transacciones aleatorias** de 4 tipos distintos, enviarlas a los `ExecutorService` de cada banco, recolectar los `Future<Receipt>`, persistirlos y mostrar la auditoría final. Además, te encargas de la **consolidación final** (mergear PRs, correr todo, empaquetar ZIP, exportar PDF).
 
 ### 🧠 Por qué es importante (aprendizaje)
 Estás implementando un patrón **Producer-Consumer** con `ExecutorService` — el mismo que usan colas de mensajes (RabbitMQ, Kafka consumers), pools de workers HTTP, y sistemas de procesamiento batch. Aprendes a **coordinar múltiples pools de hilos independientes**, a **recolectar resultados asíncronos** con `Future.get()` y a hacer un **shutdown ordenado** para no perder trabajo en vuelo.
@@ -86,6 +207,34 @@ Estás implementando un patrón **Producer-Consumer** con `ExecutorService` — 
 
 ### 🔁 Cómo lo puedes reaprovechar
 En cualquier proyecto donde necesites paralelizar N tareas independientes: procesamiento de imágenes, envío masivo de correos, scraping web, backtests financieros.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop && git pull origin develop
+git checkout -b feature/tarea-01-lopez
+```
+
+**Paso 2 — Crear el archivo en tu IDE**
+- **IntelliJ:** en el panel Project, navega hasta `src/main/java/com/sv/grupo7/banco/controller/` → clic derecho → `New → Java Class` → escribe `BankSimulation` → Enter.
+- **VS Code:** en el Explorer, navega hasta `src/main/java/com/sv/grupo7/banco/controller/` → clic en el ícono `New File` → escribe `BankSimulation.java` → Enter.
+
+**Paso 3 — Pegar el código**
+Borra todo el contenido autogenerado y pega el código de referencia de abajo exactamente como está.
+
+**Paso 4 — Verificar que no hay errores de sintaxis**
+- **IntelliJ:** `Ctrl+F9` (Build). Ignora errores de clases ausentes (Receipt, Bank, etc.) — son de tus compañeros. Solo importa que no haya subrayados rojos en TU archivo por errores de sintaxis.
+- **VS Code:** el panel de Problemas (`Ctrl+Shift+M`) no debe mostrar errores en `BankSimulation.java`.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/controller/BankSimulation.java
+git commit -m "feat(tarea01): orquestador BankSimulation con 100 hilos concurrentes"
+git push -u origin feature/tarea-01-lopez
+```
+
+**Paso 6 — Avisar a Héctor** (aplica también si eres Héctor — cierra la tarea en el planner).
 
 ### 📝 Código de referencia
 ```java
@@ -189,7 +338,7 @@ public class BankSimulation {
         int accCounter = 1;
         Random rnd = new Random(7);
         for (Client c : clients) {
-            int numCuentas = 1 + rnd.nextInt(2); // 1 o 2 cuentas
+            int numCuentas = 1 + rnd.nextInt(2);
             for (int i = 0; i < numCuentas; i++) {
                 Bank b = banks.get(rnd.nextInt(banks.size()));
                 String accNum = String.format("ACC-%04d", accCounter++);
@@ -225,16 +374,6 @@ public class BankSimulation {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-01-lopez
-# ... crear el archivo ...
-git add src/main/java/com/sv/grupo7/banco/controller/BankSimulation.java
-git commit -m "feat(tarea01): orquestador BankSimulation con 100 hilos concurrentes"
-git push -u origin feature/tarea-01-lopez
-```
-
 ---
 
 ## Tarea 2 — Alejandro Vigil
@@ -253,6 +392,35 @@ Aprendes a **encapsular un thread pool** dentro de una entidad de dominio — pa
 
 ### 🔁 Cómo lo puedes reaprovechar
 Cada vez que necesites un componente autónomo con su propio worker pool: servicios de notificaciones, procesadores de colas, backends de renderizado.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-02-vigil
+```
+
+**Paso 2 — Crear el archivo en tu IDE**
+- **IntelliJ:** panel Project → navega hasta `src/main/java/com/sv/grupo7/banco/entities/` → clic derecho → `New → Java Class` → escribe `Bank` → Enter.
+- **VS Code:** Explorer → navega hasta `src/main/java/com/sv/grupo7/banco/entities/` → ícono `New File` → escribe `Bank.java` → Enter.
+
+**Paso 3 — Pegar el código**
+Borra todo lo autogenerado y pega el código de referencia de abajo.
+
+**Paso 4 — Verificar sintaxis**
+Compila solo tu archivo. Errores como `cannot find symbol Receipt` son normales (Receipt la hace Nicole). Solo deben quedar en verde los errores propios de sintaxis.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/entities/Bank.java
+git commit -m "feat(tarea02): entidad Bank con ExecutorService propio"
+git push -u origin feature/tarea-02-vigil
+```
+
+**Paso 6 — Avisar a Héctor por Teams:**
+> "Héctor, listo Tarea 2 (Bank.java), push a feature/tarea-02-vigil"
 
 ### 📝 Código de referencia
 ```java
@@ -323,15 +491,6 @@ public class Bank {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-02-vigil
-git add src/main/java/com/sv/grupo7/banco/entities/Bank.java
-git commit -m "feat(tarea02): entidad Bank con ExecutorService propio"
-git push -u origin feature/tarea-02-vigil
-```
-
 ---
 
 ## Tarea 3 — Bayron Orellana
@@ -350,6 +509,35 @@ Este es el corazón del **polimorfismo + concurrencia**: gracias a que `Transact
 
 ### 🔁 Cómo lo puedes reaprovechar
 Cualquier flujo donde tengas "operaciones intercambiables" (envío de emails, generación de PDFs, procesamiento de imágenes) puede modelarse con esta jerarquía.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-03-orellana
+```
+
+**Paso 2 — Crear el archivo en tu IDE**
+- **IntelliJ:** panel Project → `src/main/java/com/sv/grupo7/banco/abstraction/` → clic derecho → `New → Java Class` → escribe `Transaction` → en el menú que aparece elige `Abstract Class` (o escribe la clase como `abstract class` manualmente).
+- **VS Code:** Explorer → `src/main/java/com/sv/grupo7/banco/abstraction/` → ícono `New File` → `Transaction.java`.
+
+**Paso 3 — Pegar el código**
+Borra todo lo autogenerado y pega el código de referencia.
+
+**Paso 4 — Verificar sintaxis**
+`Callable<Receipt>` dará error si Receipt no está aún — es normal. Verifica que no haya errores de sintaxis en tu propio archivo.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/abstraction/Transaction.java
+git commit -m "feat(tarea03): clase abstracta Transaction (Callable<Receipt>)"
+git push -u origin feature/tarea-03-orellana
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 3 (Transaction.java), push a feature/tarea-03-orellana"
 
 ### 📝 Código de referencia
 ```java
@@ -373,7 +561,7 @@ public abstract class Transaction implements Callable<Receipt> {
         this.amount = amount;
     }
 
-    /** Cada transacción debe indicar en qué banco se origina, para que el orquestador la envíe al pool correcto. */
+    /** Cada transacción indica en qué banco se origina, para que el orquestador la envíe al pool correcto. */
     public abstract Bank getOriginBank();
 
     public String getTransactionId() {
@@ -388,15 +576,6 @@ public abstract class Transaction implements Callable<Receipt> {
         return amount;
     }
 }
-```
-
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-03-orellana
-git add src/main/java/com/sv/grupo7/banco/abstraction/Transaction.java
-git commit -m "feat(tarea03): clase abstracta Transaction (Callable<Receipt>)"
-git push -u origin feature/tarea-03-orellana
 ```
 
 ---
@@ -417,6 +596,33 @@ Es tu primer contacto con **exclusión mutua**: aunque no llamas directamente a 
 
 ### 🔁 Cómo lo puedes reaprovechar
 Cualquier operación de **débito atómico**: cupones, saldos de gift cards, créditos prepagados.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-04-diaz
+```
+
+**Paso 2 — Crear el archivo en tu IDE**
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/implementation/` → clic derecho → `New → Java Class` → `LocalWithdraw`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/implementation/` → `New File` → `LocalWithdraw.java`.
+
+**Paso 3 — Pegar el código** de la sección de abajo.
+
+**Paso 4 — Verificar sintaxis.** Errores de clases ausentes (Transaction, BankAccount, Receipt) son normales.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/implementation/LocalWithdraw.java
+git commit -m "feat(tarea04): implementar LocalWithdraw (retiro sincronizado)"
+git push -u origin feature/tarea-04-diaz
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 4 (LocalWithdraw.java), push a feature/tarea-04-diaz"
 
 ### 📝 Código de referencia
 ```java
@@ -468,15 +674,6 @@ public class LocalWithdraw extends Transaction {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-04-diaz
-git add src/main/java/com/sv/grupo7/banco/implementation/LocalWithdraw.java
-git commit -m "feat(tarea04): implementar LocalWithdraw (retiro sincronizado)"
-git push -u origin feature/tarea-04-diaz
-```
-
 ---
 
 ## Tarea 5 — Walter Flores
@@ -495,6 +692,44 @@ El UML es el **lenguaje visual** con que los desarrolladores comunican arquitect
 
 ### 🔁 Cómo lo puedes reaprovechar
 En cualquier proyecto donde documentes modelo de dominio, DDD, o hagas propuestas técnicas para clientes.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-05-flores
+```
+
+**Paso 2 — Abrir draw.io**
+Ve a **https://app.diagrams.net/** en tu navegador. No necesitas cuenta. Elige `Create New Diagram → Blank Diagram`.
+
+**Paso 3 — Crear el diagrama**
+Dibuja cada clase según la especificación completa de abajo. Para agregar una clase en draw.io:
+- Doble clic en el lienzo → aparece el menú de formas.
+- Busca "UML Class" en el buscador o usa la categoría UML del panel izquierdo.
+- Arrastra la forma al lienzo y edita el nombre/atributos/métodos.
+
+**Paso 4 — Guardar el archivo fuente**
+`File → Save As → Device` → guarda como `DIAGRAMA_GRUPO_7.drawio` en tu carpeta local.
+
+**Paso 5 — Exportar a PDF**
+`File → Export As → PDF` → guarda como `DIAGRAMA_GRUPO_7.pdf`.
+
+**Paso 6 — Copiar los archivos al repo**
+Copia `DIAGRAMA_GRUPO_7.pdf` (y si quieres `DIAGRAMA_GRUPO_7.drawio`) a la carpeta `docs/` dentro de `TareaS7_Banco/`.
+
+**Paso 7 — Commit y push**
+```bash
+git add docs/DIAGRAMA_GRUPO_7.pdf
+git add docs/DIAGRAMA_GRUPO_7.drawio
+git commit -m "docs(tarea05): agregar diagrama UML del sistema Multibanco"
+git push -u origin feature/tarea-05-flores
+```
+
+**Paso 8 — Avisar a Héctor:**
+> "Héctor, listo Tarea 5 (DIAGRAMA_GRUPO_7.pdf), push a feature/tarea-05-flores"
 
 ### 📝 Herramientas sugeridas
 - **draw.io** (gratis, web): https://app.diagrams.net/ → `File → Export as → PDF`
@@ -605,7 +840,7 @@ A continuación tienes **todas las clases** que deben aparecer en el diagrama, c
   + toString() : String
 ─────────────────────────────
 ```
-**Por qué así:** Es un **objeto de valor inmutable** — un comprobante nunca cambia después de emitido. Marca la clase como `«record»` y como `«Serializable»` (los `record` en Java pueden implementar `Serializable`). El campo `status` toma solo 3 valores: `SUCCESS`, `FAILED`, `ROLLED_BACK` — puedes anotarlo como comentario UML (`«enum-like»`).
+**Por qué así:** Es un **objeto de valor inmutable** — un comprobante nunca cambia después de emitido. Marca la clase como `«record»` y como `«Serializable»`. El campo `status` toma solo 3 valores: `SUCCESS`, `FAILED`, `ROLLED_BACK`.
 
 ---
 
@@ -798,16 +1033,6 @@ Aquí está la lista **completa** de las relaciones a dibujar, con el tipo de fl
 - [ ] Todas las asociaciones muestran **multiplicidades** (`1`, `0..*`, `2`) y **roles** cuando hay ambigüedad (`origen`/`destino`).
 - [ ] Exportado como PDF con el nombre exacto: `DIAGRAMA_GRUPO_7.pdf`.
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-05-flores
-# copia tu PDF (y opcional .drawio/.puml) en la carpeta docs/
-git add docs/DIAGRAMA_GRUPO_7.pdf docs/DIAGRAMA_GRUPO_7.drawio
-git commit -m "docs(tarea05): agregar diagrama UML del sistema Multibanco"
-git push -u origin feature/tarea-05-flores
-```
-
 ---
 
 ## Tarea 6 — William Melgar
@@ -826,6 +1051,33 @@ Aunque es la operación más simple, es clave para probar que el `deposit()` de 
 
 ### 🔁 Cómo lo puedes reaprovechar
 Toda operación de **incremento seguro** en un contador o saldo compartido entre hilos.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-06-melgar
+```
+
+**Paso 2 — Crear el archivo en tu IDE**
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/implementation/` → clic derecho → `New → Java Class` → `LocalDeposit`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/implementation/` → `New File` → `LocalDeposit.java`.
+
+**Paso 3 — Pegar el código** de la sección de abajo.
+
+**Paso 4 — Verificar sintaxis.** Errores de clases ausentes son normales.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/implementation/LocalDeposit.java
+git commit -m "feat(tarea06): implementar LocalDeposit (depósito sincronizado)"
+git push -u origin feature/tarea-06-melgar
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 6 (LocalDeposit.java), push a feature/tarea-06-melgar"
 
 ### 📝 Código de referencia
 ```java
@@ -876,15 +1128,6 @@ public class LocalDeposit extends Transaction {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-06-melgar
-git add src/main/java/com/sv/grupo7/banco/implementation/LocalDeposit.java
-git commit -m "feat(tarea06): implementar LocalDeposit (depósito sincronizado)"
-git push -u origin feature/tarea-06-melgar
-```
-
 ---
 
 ## Tarea 7 — Alejandro Merino
@@ -903,6 +1146,34 @@ Estás implementando el **corazón de la exclusión mutua** en Java. Si `withdra
 
 ### 🔁 Cómo lo puedes reaprovechar
 Cualquier recurso mutable compartido entre hilos: buffers, colas custom, gestores de sesiones.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-07-merino
+```
+
+**Paso 2 — Crear el archivo en tu IDE**
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/entities/` → clic derecho → `New → Java Class` → `BankAccount`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/entities/` → `New File` → `BankAccount.java`.
+
+**Paso 3 — Pegar el código** de la sección de abajo.
+
+**Paso 4 — Verificar sintaxis.**
+Esta clase no depende de ninguna otra del proyecto, así que debería compilar completamente sin errores. En IntelliJ: `Ctrl+F9` → no debe haber subrayados rojos.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/entities/BankAccount.java
+git commit -m "feat(tarea07): BankAccount con métodos synchronized"
+git push -u origin feature/tarea-07-merino
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 7 (BankAccount.java), push a feature/tarea-07-merino"
 
 ### 📝 Código de referencia
 ```java
@@ -954,15 +1225,6 @@ public class BankAccount {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-07-merino
-git add src/main/java/com/sv/grupo7/banco/entities/BankAccount.java
-git commit -m "feat(tarea07): BankAccount con métodos synchronized"
-git push -u origin feature/tarea-07-merino
-```
-
 ---
 
 ## Tarea 8 — Erika Fuentes
@@ -981,6 +1243,45 @@ Probar código concurrente es difícil — un test que "pasa a veces" es peor qu
 
 ### 🔁 Cómo lo puedes reaprovechar
 Cualquier proyecto Java con lógica de negocio importante debe tener suite de JUnit — el patrón es idéntico.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-08-fuentes
+```
+
+**Paso 2 — Crear los archivos de test en tu IDE**
+
+Los archivos van en la carpeta de TESTS, no de sources:
+
+- **IntelliJ:**
+  1. En el panel Project, navega hasta `src/test/java/com/sv/grupo7/banco/`.
+  2. Clic derecho → `New → Java Class` → `BankAccountTest` → Enter.
+  3. Repite para `TransactionTest`.
+
+- **VS Code:**
+  1. En el Explorer, navega hasta `src/test/java/com/sv/grupo7/banco/`.
+  2. `New File` → `BankAccountTest.java`.
+  3. `New File` → `TransactionTest.java`.
+
+**Paso 3 — Pegar el código** en cada archivo según la sección de abajo.
+
+**Paso 4 — Verificar sintaxis.**
+Los tests dependen de JUnit 5 y de las clases de tus compañeros. Es normal que haya errores de "cannot find symbol" hasta que el proyecto esté integrado. Verifica que no haya errores de sintaxis propios de tus archivos.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/test/java/com/sv/grupo7/banco/BankAccountTest.java
+git add src/test/java/com/sv/grupo7/banco/TransactionTest.java
+git commit -m "test(tarea08): pruebas unitarias para BankAccount y Transaction"
+git push -u origin feature/tarea-08-fuentes
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 8 (BankAccountTest + TransactionTest), push a feature/tarea-08-fuentes"
 
 ### 📝 Código de referencia — `BankAccountTest.java`
 ```java
@@ -1055,19 +1356,6 @@ class TransactionTest {
 }
 ```
 
-### ⚙️ Ejecutar los tests
-Si el proyecto usa Maven: `mvn test`
-Si usa `javac` puro: compilar los tests con JUnit 5 en el classpath (Héctor definirá esto en integración).
-
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-08-fuentes
-git add src/test/java/com/sv/grupo7/banco/
-git commit -m "test(tarea08): pruebas unitarias para BankAccount y Transaction"
-git push -u origin feature/tarea-08-fuentes
-```
-
 ---
 
 ## Tarea 9 — Walter Vásquez
@@ -1090,6 +1378,49 @@ Aprendes tres cosas clave: **serialización de objetos**, **patrón DAO** (separ
 ### 🔁 Cómo lo puedes reaprovechar
 - El `DaoTransaction` es plantilla para cualquier repositorio "en disco".
 - El `MovementsViewer` es plantilla para cualquier visor tabular filtrable.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-09-vasquez
+```
+
+**Paso 2 — Crear los tres archivos en tu IDE**
+
+Archivo 1 — `IDao.java` en el paquete `interfaces`:
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/interfaces/` → clic derecho → `New → Java Class` → en el tipo elige `Interface` → nombre `IDao`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/interfaces/` → `New File` → `IDao.java`.
+
+Archivo 2 — `DaoTransaction.java` en el paquete `dao`:
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/dao/` → `New → Java Class` → `DaoTransaction`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/dao/` → `New File` → `DaoTransaction.java`.
+
+Archivo 3 — `MovementsViewer.java` en el paquete `controller`:
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/controller/` → `New → Java Class` → `MovementsViewer`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/controller/` → `New File` → `MovementsViewer.java`.
+
+Archivo 4 (opcional pero recomendado) — `DaoTransactionTest.java` en `src/test/`:
+- Misma lógica, en `src/test/java/com/sv/grupo7/banco/`.
+
+**Paso 3 — Pegar el código** en cada archivo según las secciones de abajo.
+
+**Paso 4 — Verificar sintaxis** de cada archivo por separado.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/dao/DaoTransaction.java
+git add src/main/java/com/sv/grupo7/banco/interfaces/IDao.java
+git add src/main/java/com/sv/grupo7/banco/controller/MovementsViewer.java
+git add src/test/java/com/sv/grupo7/banco/DaoTransactionTest.java
+git commit -m "feat(tarea09): DAO de transacciones + visor Swing de movimientos"
+git push -u origin feature/tarea-09-vasquez
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 9 (DaoTransaction + IDao + MovementsViewer), push a feature/tarea-09-vasquez"
 
 ### 📝 Código de referencia — `IDao.java`
 ```java
@@ -1181,7 +1512,8 @@ public class MovementsViewer extends JFrame {
 
     private final DaoTransaction dao = new DaoTransaction();
     private final DefaultTableModel model = new DefaultTableModel(
-            new String[]{"Timestamp", "Tipo", "Cliente Orig", "Cliente Dest", "Cuenta Orig", "Cuenta Dest", "Banco Orig", "Banco Dest", "Monto", "Estado"}, 0);
+            new String[]{"Timestamp", "Tipo", "Cliente Orig", "Cliente Dest",
+                         "Cuenta Orig", "Cuenta Dest", "Banco Orig", "Banco Dest", "Monto", "Estado"}, 0);
 
     public MovementsViewer() {
         super("Multibanco G7 — Visor de Movimientos");
@@ -1224,8 +1556,8 @@ public class MovementsViewer extends JFrame {
             String cli   = (String) filtroCliente.getSelectedItem();
             String banco = (String) filtroBanco.getSelectedItem();
             List<Receipt> filtered = dao.readAll().stream()
-                    .filter(r -> "TODOS".equals(cli) || cli.equals(r.clientIdOrigen()) || cli.equals(r.clientIdDestino()))
-                    .filter(r -> "TODOS".equals(banco) || banco.equals(r.bancoOrigen()) || banco.equals(r.bancoDestino()))
+                    .filter(r -> "TODOS".equals(cli)   || cli.equals(r.clientIdOrigen())   || cli.equals(r.clientIdDestino()))
+                    .filter(r -> "TODOS".equals(banco) || banco.equals(r.bancoOrigen())    || banco.equals(r.bancoDestino()))
                     .collect(Collectors.toList());
             for (Receipt r : filtered) {
                 model.addRow(new Object[]{
@@ -1273,18 +1605,6 @@ class DaoTransactionTest {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-09-vasquez
-git add src/main/java/com/sv/grupo7/banco/dao/ \
-        src/main/java/com/sv/grupo7/banco/interfaces/ \
-        src/main/java/com/sv/grupo7/banco/controller/MovementsViewer.java \
-        src/test/java/com/sv/grupo7/banco/DaoTransactionTest.java
-git commit -m "feat(tarea09): DAO de transacciones + visor Swing de movimientos"
-git push -u origin feature/tarea-09-vasquez
-```
-
 ---
 
 ## Tarea 10 — Carlos Ventura
@@ -1296,7 +1616,7 @@ Dos transacciones de la familia "transferencia":
 2. **`InterBankTransfer`** — mueve dinero entre 2 cuentas de **bancos distintos**. Withdraw en origen → simular latencia y **85% probabilidad de éxito** → si falla la acreditación, **rollback** reingresando los fondos al origen.
 
 ### 🧠 Por qué es importante
-Estás implementando el patrón **Saga** (compensating transactions) — clave en microservicios distribuidos donde no puedes hacer una transacción ACID clásica. Cuando algo falla en el paso N, deshaces los pasos 1..N-1 con operaciones compensatorias. Esto es lo que hace, por ejemplo, Airbnb cuando reserva alojamiento + cobro + notificación y algo falla a mitad del proceso.
+Estás implementando el patrón **Saga** (compensating transactions) — clave en microservicios distribuidos donde no puedes hacer una transacción ACID clásica. Cuando algo falla en el paso N, deshaces los pasos 1..N-1 con operaciones compensatorias.
 
 ### 💼 Aplicación profesional real
 - **Sagas en microservicios** (Kafka + Choreography-based Saga, o Temporal.io).
@@ -1305,6 +1625,40 @@ Estás implementando el patrón **Saga** (compensating transactions) — clave e
 
 ### 🔁 Cómo lo puedes reaprovechar
 Cualquier flujo multi-paso donde debas garantizar consistencia sin transacciones de BD: e-commerce, reservas de viaje, procesos ETL con checkpoints.
+
+### ✅ Pasos para completar esta tarea
+
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-10-ventura
+```
+
+**Paso 2 — Crear los dos archivos en tu IDE**
+
+Archivo 1 — `LocalTransfer.java`:
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/implementation/` → `New → Java Class` → `LocalTransfer`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/implementation/` → `New File` → `LocalTransfer.java`.
+
+Archivo 2 — `InterBankTransfer.java` (mismo paquete):
+- **IntelliJ:** mismo directorio → `New → Java Class` → `InterBankTransfer`.
+- **VS Code:** `New File` → `InterBankTransfer.java`.
+
+**Paso 3 — Pegar el código** en cada archivo según las secciones de abajo.
+
+**Paso 4 — Verificar sintaxis** de ambos archivos.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/implementation/LocalTransfer.java
+git add src/main/java/com/sv/grupo7/banco/implementation/InterBankTransfer.java
+git commit -m "feat(tarea10): transferencias local e interbancaria con rollback"
+git push -u origin feature/tarea-10-ventura
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 10 (LocalTransfer + InterBankTransfer), push a feature/tarea-10-ventura"
 
 ### 📝 Código de referencia — `LocalTransfer.java`
 ```java
@@ -1442,16 +1796,6 @@ public class InterBankTransfer extends Transaction {
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-10-ventura
-git add src/main/java/com/sv/grupo7/banco/implementation/LocalTransfer.java \
-        src/main/java/com/sv/grupo7/banco/implementation/InterBankTransfer.java
-git commit -m "feat(tarea10): transferencias local e interbancaria con rollback"
-git push -u origin feature/tarea-10-ventura
-```
-
 ---
 
 ## Tarea 11 — Nicole Sánchez
@@ -1473,37 +1817,40 @@ Aprendes dos cosas: **serialización con `Serializable`** (necesaria para persis
 ### 🔁 Cómo lo puedes reaprovechar
 Cualquier objeto de datos que no debe mutar: eventos de dominio, respuestas de API, filas de reportes.
 
-### 📝 Código de referencia — `Client.java`
-```java
-package com.sv.grupo7.banco.entities;
+### ✅ Pasos para completar esta tarea
 
-import java.io.Serializable;
-
-public class Client implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private final String id;
-    private final String name;
-    private final String lastName;
-
-    public Client(String id, String name, String lastName) {
-        this.id = id;
-        this.name = name;
-        this.lastName = lastName;
-    }
-
-    public String getId()       { return id; }
-    public String getName()     { return name; }
-    public String getLastName() { return lastName; }
-    public String getFullName() { return name + " " + lastName; }
-
-    @Override
-    public String toString() {
-        return "Client{" + id + ": " + getFullName() + "}";
-    }
-}
+**Paso 1 — Crear la rama**
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/tarea-11-sanchez
 ```
+
+**Paso 2 — Crear los dos archivos en tu IDE**
+
+Archivo 1 — `Receipt.java`:
+- **IntelliJ:** `src/main/java/com/sv/grupo7/banco/entities/` → clic derecho → `New → Java Class` → en el tipo que aparece en el diálogo selecciona `Record` → nombre `Receipt`.
+- **VS Code:** `src/main/java/com/sv/grupo7/banco/entities/` → `New File` → `Receipt.java`.
+
+Archivo 2 — `Client.java` (mismo paquete):
+- **IntelliJ:** mismo directorio → `New → Java Class` → `Client`.
+- **VS Code:** `New File` → `Client.java`.
+
+**Paso 3 — Pegar el código** en cada archivo según las secciones de abajo.
+
+**Paso 4 — Verificar sintaxis.**
+Estas dos clases no dependen de nada del proyecto (solo usan clases del JDK), así que deben compilar completamente sin errores. En IntelliJ: `Ctrl+F9` → sin errores rojos.
+
+**Paso 5 — Commit y push**
+```bash
+git add src/main/java/com/sv/grupo7/banco/entities/Receipt.java
+git add src/main/java/com/sv/grupo7/banco/entities/Client.java
+git commit -m "feat(tarea11): entidades Receipt (record) y Client (Serializable)"
+git push -u origin feature/tarea-11-sanchez
+```
+
+**Paso 6 — Avisar a Héctor:**
+> "Héctor, listo Tarea 11 (Receipt + Client), push a feature/tarea-11-sanchez"
 
 ### 📝 Código de referencia — `Receipt.java`
 ```java
@@ -1523,36 +1870,54 @@ public record Receipt(
         String bancoDestino,
         double amount,
         LocalDateTime timestamp,
-        String status               // SUCCESS | FAILED | ROLLED_BACK
+        String status
 ) implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s | %s → %s | $%.2f | %s",
-                timestamp, transactionId,
-                cuentaOrigen != null ? cuentaOrigen : "N/A",
-                cuentaDestino != null ? cuentaDestino : "N/A",
-                amount, status);
+        return String.format("[%s] %s | $%.2f | %s → %s | %s",
+                timestamp, type, amount, bancoOrigen, bancoDestino, status);
     }
 }
 ```
 
-### 🌿 Comandos Git
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-11-sanchez
-git add src/main/java/com/sv/grupo7/banco/entities/Client.java \
-        src/main/java/com/sv/grupo7/banco/entities/Receipt.java
-git commit -m "feat(tarea11): entidades Client y Receipt (record serializable)"
-git push -u origin feature/tarea-11-sanchez
+### 📝 Código de referencia — `Client.java`
+```java
+package com.sv.grupo7.banco.entities;
+
+import java.io.Serializable;
+
+public class Client implements Serializable {
+
+    private final String id;
+    private final String name;
+    private final String lastName;
+
+    public Client(String id, String name, String lastName) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFullName() {
+        return name + " " + lastName;
+    }
+
+    @Override
+    public String toString() {
+        return id + " — " + getFullName();
+    }
+}
 ```
-
----
-
-## 🆘 ¿Tienes dudas?
-
-- **Duda técnica** → escríbelo en el chat de Teams del Grupo 7.
-- **No compila** → adjunta el error completo y la clase en el chat.
-- **Git te da problemas** → primero `git status`, luego pega el output al chat.
-
-**Recuerda:** la calidad de tu clase impacta al resto del equipo. Compila localmente antes de hacer push. 💪
