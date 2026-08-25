@@ -501,26 +501,302 @@ En cualquier proyecto donde documentes modelo de dominio, DDD, o hagas propuesta
 - **PlantUML** (texto → diagrama): https://www.plantuml.com/plantuml/
 - **Mermaid** (dentro de VS Code con extensión Markdown Preview Mermaid): más rápido para versionar en Git
 
-### Estructura mínima que debe mostrar el diagrama
+### 📐 Especificación completa del diagrama UML
+
+A continuación tienes **todas las clases** que deben aparecer en el diagrama, con sus **atributos, métodos, visibilidad, tipos y relaciones**. Junto a cada bloque encuentras el **porqué** — para que entiendas qué modela cada parte del sistema mientras la dibujas.
+
+> **Convenciones UML que debes usar en tu diagrama:**
+> - Visibilidad: `+` public, `-` private, `#` protected, `~` package
+> - Atributos: `visibilidad nombre : Tipo`
+> - Métodos: `visibilidad nombre(param : Tipo) : TipoRetorno`
+> - Clase abstracta → nombre en *cursiva* o con `{abstract}`
+> - Interfaz → estereotipo `«interface»` sobre el nombre
+> - `record` → estereotipo `«record»`
+
+---
+
+#### 🔷 Clase 1 — `Client` (entities)
 
 ```
-Bank ──1..*── BankAccount ──1──> Client
-  │                              (clientId)
-  └── contiene ExecutorService (composición)
-
-Transaction (abstracta, Callable<Receipt>)
-    ▲
-    ├── LocalWithdraw       ──> BankAccount
-    ├── LocalDeposit        ──> BankAccount
-    ├── LocalTransfer       ──> 2× BankAccount (origen + destino, mismo Bank)
-    └── InterBankTransfer   ──> 2× BankAccount (origen Bank A, destino Bank B)
-
-DaoTransaction ──implements──> IDao<Receipt>
-DaoTransaction ──persiste──> Receipt (Serializable)
-
-BankSimulation ──crea──> Bank, Client, BankAccount
-BankSimulation ──lanza──> 100× Transaction vía Bank.submit()
+─────────────────────────────
+        Client
+─────────────────────────────
+  - id       : String
+  - name     : String
+  - lastName : String
+─────────────────────────────
+  + Client(id, name, lastName)
+  + getId()       : String
+  + getName()     : String
+  + getLastName() : String
+  + getFullName() : String
+─────────────────────────────
 ```
+**Por qué así:** `Client` es una **entidad de dominio** — representa a la persona titular. Los atributos son `final` (inmutables) porque un cliente no cambia de identidad. Implementa `Serializable` (marca con estereotipo `«Serializable»` en el diagrama) para poder guardarse a `.dat` si hiciera falta.
+
+---
+
+#### 🔷 Clase 2 — `BankAccount` (entities)
+
+```
+─────────────────────────────
+        BankAccount
+─────────────────────────────
+  - accountNumber : String
+  - clientId      : String
+  - bankName      : String
+  - balance       : double
+─────────────────────────────
+  + BankAccount(accountNumber, clientId, bankName, initialBalance)
+  + withdraw(amount : double) : boolean   {synchronized}
+  + deposit(amount : double)  : void      {synchronized}
+  + getBalance()              : double    {synchronized}
+  + getAccountNumber()        : String
+  + getClientId()             : String
+  + getBankName()             : String
+─────────────────────────────
+```
+**Por qué así:** Los métodos que tocan `balance` son `{synchronized}` — marca esa restricción explícitamente en el diagrama porque es **la razón académica de todo el ejercicio** (exclusión mutua para evitar race conditions). El campo `clientId` es un **identificador foráneo** al `Client` — no una referencia directa al objeto — para simular cómo se hace en bases de datos relacionales.
+
+---
+
+#### 🔷 Clase 3 — `Bank` (entities)
+
+```
+─────────────────────────────
+          Bank
+─────────────────────────────
+  - name     : String
+  - accounts : HashMap<String, BankAccount>
+  - executor : ExecutorService
+─────────────────────────────
+  + Bank(name : String, poolSize : int)
+  + getName()                             : String
+  + addAccount(account : BankAccount)     : void
+  + getAccount(accountNumber : String)    : BankAccount
+  + getAllAccounts()                      : Collection<BankAccount>
+  + submit(transaction : Transaction)     : Future<Receipt>
+  + shutdown()                            : void
+  + printAuditReport()                    : void
+─────────────────────────────
+```
+**Por qué así:** `Bank` es un **Aggregate Root** (patrón DDD): agrupa cuentas y gestiona su propio pool de hilos. Ojo con `submit()` — retorna `Future<Receipt>`, esa firma es la conexión con `Transaction` (que es `Callable<Receipt>`). El `ExecutorService` es un atributo *interno* → la relación con él es **composición** (rombo negro relleno).
+
+---
+
+#### 🔷 Clase 4 — `Receipt` (entities) — `«record»`
+
+```
+─────────────────────────────
+   «record»  Receipt
+─────────────────────────────
+  transactionId    : String
+  type             : String
+  clientIdOrigen   : String
+  clientIdDestino  : String
+  cuentaOrigen     : String
+  cuentaDestino    : String
+  bancoOrigen      : String
+  bancoDestino     : String
+  amount           : double
+  timestamp        : LocalDateTime
+  status           : String
+─────────────────────────────
+  + toString() : String
+─────────────────────────────
+```
+**Por qué así:** Es un **objeto de valor inmutable** — un comprobante nunca cambia después de emitido. Marca la clase como `«record»` y como `«Serializable»` (los `record` en Java pueden implementar `Serializable`). El campo `status` toma solo 3 valores: `SUCCESS`, `FAILED`, `ROLLED_BACK` — puedes anotarlo como comentario UML (`«enum-like»`).
+
+---
+
+#### 🔷 Clase 5 — `Transaction` (abstraction) — **clase abstracta**
+
+```
+─────────────────────────────
+   *Transaction*   {abstract}
+─────────────────────────────
+  # transactionId : String
+  # type          : String
+  # amount        : double
+─────────────────────────────
+  # Transaction(type : String, amount : double)
+  + getOriginBank()   : Bank      {abstract}
+  + call()            : Receipt   {abstract, throws Exception}
+  + getTransactionId(): String
+  + getType()         : String
+  + getAmount()       : double
+─────────────────────────────
+```
+**Por qué así:** Este es el **corazón polimórfico** del sistema. Marca la clase en *cursiva* o con `{abstract}`. Los métodos `getOriginBank()` y `call()` son abstractos → cada subclase debe implementarlos. La visibilidad de atributos es `protected` (`#`) porque los subtipos los usan directamente. **Debe aparecer una flecha de realización (línea discontinua con triángulo vacío) hacia la interfaz `Callable<Receipt>`** de `java.util.concurrent`.
+
+---
+
+#### 🔷 Clases 6–9 — Las 4 implementaciones concretas de `Transaction`
+
+```
+────────────────────────────         ────────────────────────────
+     LocalWithdraw                        LocalDeposit
+────────────────────────────         ────────────────────────────
+  - bank    : Bank                    - bank    : Bank
+  - account : BankAccount             - account : BankAccount
+────────────────────────────         ────────────────────────────
+  + LocalWithdraw(bank, account,      + LocalDeposit(bank, account,
+                  amount)                             amount)
+  + getOriginBank() : Bank            + getOriginBank() : Bank
+  + call()          : Receipt         + call()          : Receipt
+────────────────────────────         ────────────────────────────
+
+────────────────────────────         ────────────────────────────
+      LocalTransfer                       InterBankTransfer
+────────────────────────────         ────────────────────────────
+  - bank    : Bank                    - bancoOrigen    : Bank
+  - origen  : BankAccount             - bancoDestino   : Bank
+  - destino : BankAccount             - cuentaOrigen   : BankAccount
+                                      - cuentaDestino  : BankAccount
+                                      - random         : Random
+────────────────────────────         ────────────────────────────
+  + LocalTransfer(bank, origen,       + InterBankTransfer(bancoOrig,
+                  destino, amount)          bancoDest, ctaOrig,
+                                            ctaDest, amount)
+  + getOriginBank() : Bank            + getOriginBank() : Bank
+  + call()          : Receipt         + call()          : Receipt
+                                      - buildReceipt(status) : Receipt
+────────────────────────────         ────────────────────────────
+```
+**Por qué así:**
+- `LocalWithdraw` y `LocalDeposit` operan sobre **una sola cuenta** → una asociación con `BankAccount` de multiplicidad `1`.
+- `LocalTransfer` opera sobre **dos cuentas del mismo banco** → dos asociaciones con `BankAccount` (roles `origen` y `destino`) y **una** asociación con `Bank`.
+- `InterBankTransfer` opera sobre **dos cuentas de bancos distintos** → dos asociaciones con `BankAccount` **y dos asociaciones con `Bank`** (roles `bancoOrigen` y `bancoDestino`). Además tiene el campo privado `random` que modela la probabilidad de éxito 85/15.
+
+**Todas heredan de `Transaction`** → dibuja **4 flechas de herencia** (línea continua con triángulo vacío) apuntando a la clase abstracta.
+
+---
+
+#### 🔷 Clase 10 — `IDao<T>` (interfaces) — **interfaz genérica**
+
+```
+─────────────────────────────
+   «interface»  IDao<T>
+─────────────────────────────
+  + insert(item : T)     : void
+  + readAll()            : List<T>
+─────────────────────────────
+```
+**Por qué así:** Interfaz **genérica** (`<T>`) → esto es una mejora sobre el ejemplo del ingeniero. Marca el estereotipo `«interface»`. Cualquier DAO futuro (`DaoClient`, `DaoAccount`) podría implementarla — reutilización a nivel de contrato.
+
+---
+
+#### 🔷 Clase 11 — `DaoTransaction` (dao)
+
+```
+─────────────────────────────
+       DaoTransaction
+─────────────────────────────
+  - DIR : String  {static final = "transacciones_finalizadas"}
+─────────────────────────────
+  + DaoTransaction()
+  + insert(receipt : Receipt)         : void      {synchronized}
+  + readAll()                         : List<Receipt>
+  + historyFor(clientId : String)     : List<Receipt>
+  + printHistoryFor(clientId : String): void
+─────────────────────────────
+```
+**Por qué así:** Implementa `IDao<Receipt>` → dibuja una **flecha de realización** (línea discontinua + triángulo vacío) hacia `IDao<Receipt>`. El método `insert()` es `synchronized` para evitar que dos hilos escriban el mismo archivo al mismo tiempo. `historyFor()` y `printHistoryFor()` son extensiones específicas de este DAO — no están en la interfaz porque son funcionalidad de valor añadido.
+
+---
+
+#### 🔷 Clase 12 — `BankSimulation` (controller)
+
+```
+─────────────────────────────
+       BankSimulation
+─────────────────────────────
+  - TOTAL_TRANSACCIONES : int  {static final = 100}
+─────────────────────────────
+  + main(args : String[]) : void  {static}
+  - seedClients()                          : List<Client>       {static}
+  - seedAccounts(banks, clients)           : void               {static}
+  - buildRandomTransaction(banks, rnd)     : Transaction        {static}
+  - randomAccount(bank, rnd)               : BankAccount        {static}
+─────────────────────────────
+```
+**Por qué así:** Es el **orquestador**. No tiene estado propio (todos los métodos son `static`) porque su único propósito es coordinar. En el diagrama, las relaciones que salen de `BankSimulation` son **dependencias** (línea discontinua con flecha), no asociaciones — porque no guarda referencias, solo las usa temporalmente en `main()`.
+
+---
+
+#### 🔷 Clase 13 — `MovementsViewer` (controller) — extiende `JFrame`
+
+```
+─────────────────────────────
+      MovementsViewer
+─────────────────────────────
+  - dao   : DaoTransaction
+  - model : DefaultTableModel
+─────────────────────────────
+  + MovementsViewer()
+  + main(args : String[])  : void  {static}
+─────────────────────────────
+```
+**Por qué así:** Es la **UI de auditoría**. Extiende `JFrame` de Swing → dibuja una flecha de herencia hacia `javax.swing.JFrame` (puedes representarla como una caja externa gris para clases del JDK). Depende de `DaoTransaction` (composición: la crea internamente) y presenta objetos `Receipt` en su tabla.
+
+---
+
+### 🔗 Relaciones que deben aparecer en el diagrama
+
+Aquí está la lista **completa** de las relaciones a dibujar, con el tipo de flecha UML correcto y **por qué existe cada una**:
+
+| # | Origen | Tipo de relación | Destino | Multiplicidad | Por qué existe |
+|---|---|---|---|---|---|
+| 1 | `Bank` | **Composición** (◆──) | `BankAccount` | `1` ── `0..*` | Un banco *contiene* sus cuentas; si el banco desaparece, las cuentas también (ciclo de vida ligado). |
+| 2 | `Bank` | **Composición** (◆──) | `ExecutorService` | `1` ── `1` | Cada banco tiene su propio pool de hilos privado — nadie más lo usa. |
+| 3 | `BankAccount` | **Asociación** (──▶) | `Client` (por `clientId`) | `*` ── `1` | La cuenta pertenece a un cliente; se referencia por ID (no por objeto) para simular una clave foránea de BD. |
+| 4 | `Transaction` | **Realización** (─ ─▷) | `«interface» Callable<Receipt>` | — | Permite que el `ExecutorService` la ejecute y retorne un `Receipt` vía `Future.get()`. |
+| 5 | `LocalWithdraw` | **Herencia** (──▷) | `Transaction` | — | Especialización del comportamiento base. |
+| 6 | `LocalDeposit` | **Herencia** (──▷) | `Transaction` | — | Idem. |
+| 7 | `LocalTransfer` | **Herencia** (──▷) | `Transaction` | — | Idem. |
+| 8 | `InterBankTransfer` | **Herencia** (──▷) | `Transaction` | — | Idem. |
+| 9 | `LocalWithdraw` | **Asociación** (──▶) | `BankAccount` | `1` ── `1` | Necesita la cuenta sobre la cual retirar. |
+| 10 | `LocalWithdraw` | **Asociación** (──▶) | `Bank` | `1` ── `1` | Debe saber a qué banco reportar como origen. |
+| 11 | `LocalDeposit` | **Asociación** (──▶) | `BankAccount` | `1` ── `1` | Idem, para depositar. |
+| 12 | `LocalDeposit` | **Asociación** (──▶) | `Bank` | `1` ── `1` | Idem. |
+| 13 | `LocalTransfer` | **Asociación** (──▶) | `BankAccount` | `2` (roles `origen`, `destino`) | Mueve dinero entre dos cuentas del mismo banco. |
+| 14 | `LocalTransfer` | **Asociación** (──▶) | `Bank` | `1` ── `1` | Ambas cuentas están en el mismo banco. |
+| 15 | `InterBankTransfer` | **Asociación** (──▶) | `BankAccount` | `2` (roles `cuentaOrigen`, `cuentaDestino`) | Mueve dinero entre dos cuentas de bancos distintos. |
+| 16 | `InterBankTransfer` | **Asociación** (──▶) | `Bank` | `2` (roles `bancoOrigen`, `bancoDestino`) | Requiere ambos bancos para reportar y ejecutar rollback. |
+| 17 | `DaoTransaction` | **Realización** (─ ─▷) | `«interface» IDao<Receipt>` | — | Cumple el contrato genérico del DAO. |
+| 18 | `DaoTransaction` | **Dependencia** (─ ─▶) | `Receipt` | — | Persiste y lee comprobantes. |
+| 19 | `Receipt` | **Realización** (─ ─▷) | `«interface» Serializable` | — | Necesario para escribir el objeto a `.dat`. |
+| 20 | `Client` | **Realización** (─ ─▷) | `«interface» Serializable` | — | Idem. |
+| 21 | `MovementsViewer` | **Herencia** (──▷) | `JFrame` (Swing) | — | Es la ventana de la UI. |
+| 22 | `MovementsViewer` | **Composición** (◆──) | `DaoTransaction` | `1` ── `1` | Crea internamente el DAO para leer los `.dat`. |
+| 23 | `BankSimulation` | **Dependencia** (─ ─▶) | `Bank`, `Client`, `BankAccount`, `Transaction`, `DaoTransaction` | — | Instancia y coordina, pero no las guarda como atributos. |
+
+---
+
+### 🎨 Sugerencia de layout (cómo organizar las cajas en la hoja)
+
+- **Zona superior (entidades del dominio):** `Client`, `BankAccount`, `Bank`, `Receipt`. Estas son el "modelo" — colócalas alineadas horizontalmente.
+- **Zona central (jerarquía polimórfica):** `Transaction` en el centro con las 4 subclases debajo desplegadas en abanico.
+- **Zona inferior izquierda (persistencia):** `IDao<Receipt>` → `DaoTransaction`.
+- **Zona inferior derecha (controllers):** `BankSimulation` y `MovementsViewer`.
+- **Interfaces del JDK (`Callable<Receipt>`, `Serializable`, `JFrame`):** dibújalas como cajas más pequeñas con fondo gris, colocadas en los bordes del diagrama.
+- **Multiplicidades siempre visibles** (`1`, `0..*`, `2`) al lado de cada extremo de línea.
+- **Roles de asociación** (`origen`, `destino`, `bancoOrigen`, `bancoDestino`) al lado de la punta de flecha correspondiente.
+
+---
+
+### ✅ Checklist antes de exportar a PDF
+
+- [ ] Aparecen las **13 clases/interfaces** listadas arriba.
+- [ ] `Transaction` está en cursiva o marcada `{abstract}`.
+- [ ] `IDao<T>` y `Callable`, `Serializable`, `JFrame` están marcadas `«interface»` o con caja diferenciada.
+- [ ] `Receipt` está marcada `«record»`.
+- [ ] Los métodos `synchronized` de `BankAccount` y el `insert()` de `DaoTransaction` están anotados.
+- [ ] Las 4 subclases de `Transaction` tienen flecha de **herencia** (triángulo vacío + línea continua).
+- [ ] `DaoTransaction → IDao<Receipt>` y `Transaction → Callable<Receipt>` usan flecha de **realización** (triángulo vacío + línea discontinua).
+- [ ] `Bank ◆── BankAccount` y `Bank ◆── ExecutorService` usan **composición** (rombo negro relleno).
+- [ ] Todas las asociaciones muestran **multiplicidades** (`1`, `0..*`, `2`) y **roles** cuando hay ambigüedad (`origen`/`destino`).
+- [ ] Exportado como PDF con el nombre exacto: `DIAGRAMA_GRUPO_7.pdf`.
 
 ### 🌿 Comandos Git
 ```bash
