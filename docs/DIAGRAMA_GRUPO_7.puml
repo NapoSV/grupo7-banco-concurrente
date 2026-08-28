@@ -1,0 +1,263 @@
+@startuml
+title Multibanco Concurrente - Diagrama de Clases - Grupo 7
+
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 25
+skinparam ranksep 35
+
+skinparam class {
+    BackgroundColor #F8FAFC
+    BorderColor #334155
+    ArrowColor #475569
+    FontColor #0F172A
+}
+
+skinparam classBackgroundColor<<JDK>> #E5E7EB
+skinparam classBorderColor<<JDK>> #6B7280
+
+package "entities" {
+
+    class Client <<Serializable>> {
+        - id : String
+        - name : String
+        - lastName : String
+        --
+        + Client(id : String, name : String, lastName : String)
+        + getId() : String
+        + getName() : String
+        + getLastName() : String
+        + getFullName() : String
+    }
+
+    class BankAccount {
+        - accountNumber : String
+        - clientId : String
+        - bankName : String
+        - balance : double
+        --
+        + BankAccount(accountNumber : String, clientId : String, bankName : String, initialBalance : double)
+        + withdraw(amount : double) : boolean {synchronized}
+        + deposit(amount : double) : void {synchronized}
+        + getBalance() : double {synchronized}
+        + getAccountNumber() : String
+        + getClientId() : String
+        + getBankName() : String
+    }
+
+    class Bank {
+        - name : String
+        - accounts : HashMap<String, BankAccount>
+        - executor : ExecutorService
+        --
+        + Bank(name : String, poolSize : int)
+        + getName() : String
+        + addAccount(account : BankAccount) : void
+        + getAccount(accountNumber : String) : BankAccount
+        + getAllAccounts() : Collection<BankAccount>
+        + submit(transaction : Transaction) : Future<Receipt>
+        + shutdown() : void
+        + printAuditReport() : void
+    }
+
+    class Receipt <<record, Serializable>> {
+        transactionId : String
+        type : String
+        clientIdOrigen : String
+        clientIdDestino : String
+        cuentaOrigen : String
+        cuentaDestino : String
+        bancoOrigen : String
+        bancoDestino : String
+        amount : double
+        timestamp : LocalDateTime
+        status : String
+        --
+        + toString() : String
+    }
+}
+
+package "abstraction" {
+
+    abstract class Transaction {
+        # transactionId : String
+        # type : String
+        # amount : double
+        --
+        # Transaction(type : String, amount : double)
+        {abstract} + getOriginBank() : Bank
+        {abstract} + call() : Receipt {throws Exception}
+        + getTransactionId() : String
+        + getType() : String
+        + getAmount() : double
+    }
+}
+
+package "implementation" {
+
+    class LocalWithdraw {
+        - bank : Bank
+        - account : BankAccount
+        --
+        + LocalWithdraw(bank : Bank, account : BankAccount, amount : double)
+        + getOriginBank() : Bank
+        + call() : Receipt
+    }
+
+    class LocalDeposit {
+        - bank : Bank
+        - account : BankAccount
+        --
+        + LocalDeposit(bank : Bank, account : BankAccount, amount : double)
+        + getOriginBank() : Bank
+        + call() : Receipt
+    }
+
+    class LocalTransfer {
+        - bank : Bank
+        - origen : BankAccount
+        - destino : BankAccount
+        --
+        + LocalTransfer(bank : Bank, origen : BankAccount, destino : BankAccount, amount : double)
+        + getOriginBank() : Bank
+        + call() : Receipt
+    }
+
+    class InterBankTransfer {
+        - bancoOrigen : Bank
+        - bancoDestino : Bank
+        - cuentaOrigen : BankAccount
+        - cuentaDestino : BankAccount
+        - random : Random
+        --
+        + InterBankTransfer(bancoOrigen : Bank, bancoDestino : Bank, cuentaOrigen : BankAccount, cuentaDestino : BankAccount, amount : double)
+        + getOriginBank() : Bank
+        + call() : Receipt
+        - buildReceipt(status : String) : Receipt
+    }
+}
+
+package "interfaces" {
+
+    interface "IDao<T>" as IDao {
+        + insert(item : T) : void
+        + readAll() : List<T>
+    }
+}
+
+package "dao" {
+
+    class DaoTransaction {
+        - DIR : String {static, final = "transacciones_finalizadas"}
+        --
+        + DaoTransaction()
+        + insert(receipt : Receipt) : void {synchronized}
+        + readAll() : List<Receipt>
+        + historyFor(clientId : String) : List<Receipt>
+        + printHistoryFor(clientId : String) : void
+    }
+}
+
+package "controller" {
+
+    class BankSimulation {
+        - TOTAL_TRANSACCIONES : int {static, final = 100}
+        --
+        + main(args : String[]) : void {static}
+        - seedClients() : List<Client> {static}
+        - seedAccounts(banks : List<Bank>, clients : List<Client>) : void {static}
+        - buildRandomTransaction(banks : List<Bank>, rnd : Random) : Transaction {static}
+        - randomAccount(bank : Bank, rnd : Random) : BankAccount {static}
+    }
+
+    class MovementsViewer {
+        - dao : DaoTransaction
+        - model : DefaultTableModel
+        --
+        + MovementsViewer()
+        + main(args : String[]) : void {static}
+    }
+}
+
+package "Java / JDK" #E5E7EB {
+
+    interface "Callable<Receipt>" as CallableReceipt <<JDK>> {
+        + call() : Receipt
+    }
+
+    interface "Serializable" as SerializableJDK <<JDK>> {
+}
+
+    class "ExecutorService" as ExecutorServiceJDK <<JDK>> {
+        + submit(task : Callable<Receipt>) : Future<Receipt>
+        + shutdown() : void
+    }
+
+    class "JFrame" as JFrameJDK <<JDK>> {
+    }
+}
+
+' Composiciones principales
+Bank "1" *-- "0..*" BankAccount : contiene
+Bank "1" *-- "1" ExecutorServiceJDK : executor
+
+' Relacion entre cuenta y cliente
+BankAccount "*" --> "1" Client : clientId
+
+' Realizacion de Callable
+Transaction ..|> CallableReceipt
+
+' Herencia de las transacciones
+LocalWithdraw --|> Transaction
+LocalDeposit --|> Transaction
+LocalTransfer --|> Transaction
+InterBankTransfer --|> Transaction
+
+' Asociaciones de retiro y deposito
+LocalWithdraw "1" --> "1" BankAccount : account
+LocalWithdraw "1" --> "1" Bank : bank
+
+LocalDeposit "1" --> "1" BankAccount : account
+LocalDeposit "1" --> "1" Bank : bank
+
+' Asociaciones de transferencia local
+LocalTransfer "1" --> "2" BankAccount : origen / destino
+LocalTransfer "1" --> "1" Bank : bank
+
+ ' Asociaciones de transferencia interbancaria
+InterBankTransfer "1" --> "2" BankAccount : cuentaOrigen / cuentaDestino
+InterBankTransfer "1" --> "2" Bank : bancoOrigen / bancoDestino
+
+' Persistencia
+DaoTransaction ..|> IDao : T = Receipt
+DaoTransaction ..> Receipt : persiste y lee
+
+' Serializacion
+Receipt ..|> SerializableJDK
+Client ..|> SerializableJDK
+
+' Interfaz grafica
+MovementsViewer --|> JFrameJDK
+MovementsViewer "1" *-- "1" DaoTransaction : dao
+
+' Dependencias del orquestador
+BankSimulation -up[dashed]-> Bank : crea y coordina
+BankSimulation -up[dashed]-> Client : crea
+BankSimulation -up[dashed]-> BankAccount : crea
+BankSimulation -up[dashed]-> Transaction : ejecuta
+BankSimulation -up[dashed]-> DaoTransaction : persiste
+
+legend left
+  |= Símbolo |= Significado |
+  | + | public |
+  | - | private |
+  | # | protected |
+  | --|> | herencia |
+  | ..|> | realización de interfaz |
+  | *-- | composición |
+  | --> | asociación |
+  | ..> | dependencia |
+endlegend
+
+@enduml
