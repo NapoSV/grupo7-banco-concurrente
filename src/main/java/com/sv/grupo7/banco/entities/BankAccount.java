@@ -4,13 +4,17 @@ import java.io.Serializable;
 
 public class BankAccount implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private final String accountNumber;
     private final String clientId;
+    private final String bankName;
     private double balance;
 
-    public BankAccount(String accountNumber, String clientId, double initialBalance) {
+    public BankAccount(String accountNumber, String clientId, String bankName, double initialBalance) {
         this.accountNumber = accountNumber;
         this.clientId = clientId;
+        this.bankName = bankName;
         this.balance = initialBalance;
     }
 
@@ -20,6 +24,10 @@ public class BankAccount implements Serializable {
 
     public String getClientId() {
         return clientId;
+    }
+
+    public String getBankName() {
+        return bankName;
     }
 
     public synchronized double getBalance() {

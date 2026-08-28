@@ -18,7 +18,7 @@ public record Receipt(
 
     @Override
     public String toString(){
-        return String.format("[%s] %s | $s → %s | %s",
+        return String.format("[%s] %s | $%.2f → %s | %s | %s",
                 timestamp, type, amount, bancoOrigen, bancoDestino, status);
     }
 

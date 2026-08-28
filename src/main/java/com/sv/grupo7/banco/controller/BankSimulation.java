@@ -129,6 +129,7 @@ public class BankSimulation {
 
     private static BankAccount randomAccount(Bank b, Random rnd) {
         List<BankAccount> list = new ArrayList<>(b.getAllAccounts());
+        if (list.isEmpty()) throw new IllegalStateException("El banco " + b.getName() + " no tiene cuentas registradas.");
         return list.get(rnd.nextInt(list.size()));
     }
 }
