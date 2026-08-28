@@ -17,7 +17,7 @@ class TransactionTest {
     @BeforeEach
     void setUp() {
         bank = new Bank("BancoTest", 5);
-        account = new BankAccount("ACC-TEST", "CLI-TEST", 500.0);
+        account = new BankAccount("ACC-TEST", "CLI-TEST", "BancoTest", 500.0);
         bank.addAccount(account);
     }
 
