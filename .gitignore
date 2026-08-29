@@ -25,3 +25,6 @@ transacciones_finalizadas/*.dat
 
 # Logs
 *.log
+
+# Reportes de seguridad locales (gstack)
+.gstack/
