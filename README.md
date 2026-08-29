@@ -41,7 +41,7 @@ com.sv.grupo7.banco
 ## Requisitos
 
 - **Java 21+** (Temurin / OpenJDK)
-- **Git 2.30+** con Git Bash (Windows)
+- **Maven 3.8+**
 - IDE recomendado: **IntelliJ IDEA Community** o **VS Code + Extension Pack for Java**
 
 ---
@@ -49,14 +49,19 @@ com.sv.grupo7.banco
 ## Compilar y ejecutar
 
 ```bash
-# Compilar todo el código
-javac -d out $(find src/main/java -name "*.java")
+# Paso 1 — Compilar el proyecto
+mvn compile
 
-# Ejecutar la simulación de 100 hilos concurrentes
-java -cp out com.sv.grupo7.banco.controller.BankSimulation
+# Paso 2 — Ejecutar la simulación (100 transacciones concurrentes)
+#           Genera los archivos .dat en transacciones_finalizadas/
+java -cp target/classes com.sv.grupo7.banco.controller.BankSimulation
 
-# Abrir el visor Swing de movimientos
-java -cp out com.sv.grupo7.banco.controller.MovementsViewer
+# Paso 3 — Abrir el visor gráfico Swing
+#           Requiere que ya existan los .dat del paso 2
+java -cp target/classes com.sv.grupo7.banco.controller.MovementsViewer
+
+# Opcional — Ejecutar los tests unitarios
+mvn test
 ```
 
 Los comprobantes se guardan como `transacciones_finalizadas/receta_<UUID>.dat`.

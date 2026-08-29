@@ -4,8 +4,9 @@ title Multibanco Concurrente - Diagrama de Clases - Grupo 7
 top to bottom direction
 skinparam shadowing false
 skinparam classAttributeIconSize 0
-skinparam nodesep 25
-skinparam ranksep 35
+skinparam nodesep 40
+skinparam ranksep 55
+skinparam linetype ortho
 
 skinparam class {
     BackgroundColor #F8FAFC
@@ -17,6 +18,9 @@ skinparam class {
 skinparam classBackgroundColor<<JDK>> #E5E7EB
 skinparam classBorderColor<<JDK>> #6B7280
 
+' ─────────────────────────────────────────────
+' CAPA 1 — Entidades del dominio
+' ─────────────────────────────────────────────
 package "entities" {
 
     class Client <<Serializable>> {
@@ -31,7 +35,7 @@ package "entities" {
         + getFullName() : String
     }
 
-    class BankAccount {
+    class BankAccount <<Serializable>> {
         - accountNumber : String
         - clientId : String
         - bankName : String
@@ -78,6 +82,9 @@ package "entities" {
     }
 }
 
+' ─────────────────────────────────────────────
+' CAPA 2 — Abstracción de transacciones
+' ─────────────────────────────────────────────
 package "abstraction" {
 
     abstract class Transaction {
@@ -94,6 +101,9 @@ package "abstraction" {
     }
 }
 
+' ─────────────────────────────────────────────
+' CAPA 3 — Implementaciones concretas
+' ─────────────────────────────────────────────
 package "implementation" {
 
     class LocalWithdraw {
@@ -138,6 +148,9 @@ package "implementation" {
     }
 }
 
+' ─────────────────────────────────────────────
+' CAPA 4 — Persistencia
+' ─────────────────────────────────────────────
 package "interfaces" {
 
     interface "IDao<T>" as IDao {
@@ -159,6 +172,9 @@ package "dao" {
     }
 }
 
+' ─────────────────────────────────────────────
+' CAPA 5 — Controladores
+' ─────────────────────────────────────────────
 package "controller" {
 
     class BankSimulation {
@@ -180,6 +196,9 @@ package "controller" {
     }
 }
 
+' ─────────────────────────────────────────────
+' JDK — dependencias de plataforma
+' ─────────────────────────────────────────────
 package "Java / JDK" #E5E7EB {
 
     interface "Callable<Receipt>" as CallableReceipt <<JDK>> {
@@ -187,7 +206,7 @@ package "Java / JDK" #E5E7EB {
     }
 
     interface "Serializable" as SerializableJDK <<JDK>> {
-}
+    }
 
     class "ExecutorService" as ExecutorServiceJDK <<JDK>> {
         + submit(task : Callable<Receipt>) : Future<Receipt>
@@ -198,55 +217,58 @@ package "Java / JDK" #E5E7EB {
     }
 }
 
-' Composiciones principales
-Bank "1" *-- "0..*" BankAccount : contiene
-Bank "1" *-- "1" ExecutorServiceJDK : executor
+' ─────────────────────────────────────────────
+' RELACIONES
+' ─────────────────────────────────────────────
 
-' Relacion entre cuenta y cliente
+' Composición: Bank contiene cuentas y el pool de hilos
+Bank "1" *-- "0..*" BankAccount : contiene
+Bank "1" *-right- "1" ExecutorServiceJDK : executor
+
+' Asociación: cuenta pertenece a un cliente
 BankAccount "*" --> "1" Client : clientId
 
-' Realizacion de Callable
+' Realización de Callable (Transaction es ejecutable)
 Transaction ..|> CallableReceipt
 
-' Herencia de las transacciones
-LocalWithdraw --|> Transaction
-LocalDeposit --|> Transaction
-LocalTransfer --|> Transaction
+' Herencia: transacciones concretas extienden Transaction
+LocalWithdraw  --|> Transaction
+LocalDeposit   --|> Transaction
+LocalTransfer  --|> Transaction
 InterBankTransfer --|> Transaction
 
-' Asociaciones de retiro y deposito
-LocalWithdraw "1" --> "1" BankAccount : account
-LocalWithdraw "1" --> "1" Bank : bank
+' Asociaciones de transacciones con Bank y BankAccount
+LocalWithdraw    "1" --> "1" Bank        : bank
+LocalWithdraw    "1" --> "1" BankAccount : account
 
-LocalDeposit "1" --> "1" BankAccount : account
-LocalDeposit "1" --> "1" Bank : bank
+LocalDeposit     "1" --> "1" Bank        : bank
+LocalDeposit     "1" --> "1" BankAccount : account
 
-' Asociaciones de transferencia local
-LocalTransfer "1" --> "2" BankAccount : origen / destino
-LocalTransfer "1" --> "1" Bank : bank
+LocalTransfer    "1" --> "1" Bank        : bank
+LocalTransfer    "1" --> "2" BankAccount : origen / destino
 
- ' Asociaciones de transferencia interbancaria
+InterBankTransfer "1" --> "2" Bank        : bancoOrigen / bancoDestino
 InterBankTransfer "1" --> "2" BankAccount : cuentaOrigen / cuentaDestino
-InterBankTransfer "1" --> "2" Bank : bancoOrigen / bancoDestino
 
 ' Persistencia
-DaoTransaction ..|> IDao : T = Receipt
-DaoTransaction ..> Receipt : persiste y lee
+DaoTransaction ..|> IDao       : T = Receipt
+DaoTransaction ..>  Receipt    : persiste y lee
 
-' Serializacion
-Receipt ..|> SerializableJDK
-Client ..|> SerializableJDK
+' Serialización
+Receipt      ..|> SerializableJDK
+Client       ..|> SerializableJDK
+BankAccount  ..|> SerializableJDK
 
-' Interfaz grafica
+' Interfaz gráfica
 MovementsViewer --|> JFrameJDK
 MovementsViewer "1" *-- "1" DaoTransaction : dao
 
-' Dependencias del orquestador
-BankSimulation -up[dashed]-> Bank : crea y coordina
-BankSimulation -up[dashed]-> Client : crea
-BankSimulation -up[dashed]-> BankAccount : crea
-BankSimulation -up[dashed]-> Transaction : ejecuta
-BankSimulation -up[dashed]-> DaoTransaction : persiste
+' Dependencias del orquestador (BankSimulation coordina todo)
+BankSimulation ..> Bank         : crea y coordina
+BankSimulation ..> Client       : crea
+BankSimulation ..> BankAccount  : crea
+BankSimulation ..> Transaction  : ejecuta
+BankSimulation ..> DaoTransaction : persiste
 
 legend left
   |= Símbolo |= Significado |
