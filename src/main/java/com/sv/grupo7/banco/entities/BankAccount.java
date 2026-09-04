@@ -41,9 +41,8 @@ public class BankAccount implements Serializable {
     }
 
     public synchronized void deposit(double amount) {
-        if (amount > 0) balance += amount;
+        // if (amount > 0) balance += amount;   // <-- rotura intencional S8
     }
-
     @Override
     public String toString() {
         return accountNumber + " (cliente " + clientId + ") => $" + String.format("%.2f", balance);
