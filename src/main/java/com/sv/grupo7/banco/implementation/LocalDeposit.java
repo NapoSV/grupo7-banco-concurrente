@@ -31,11 +31,11 @@ public class LocalDeposit extends Transaction {
 
         account.deposit(amount);
 
-        // Bonificación del 1% si el saldo resultante supera $1 000
+        // Bonificacion del 1% si el saldo resultante supera $1 000
         if (account.getBalance() >= 1000.0) {
             double bonus = account.getBalance() * 0.01;
             account.deposit(bonus);
-            System.out.printf("[%s] %s → Bonificación aplicada: +$%.2f%n",
+            System.out.printf("[%s] %s -> Bonificacion aplicada: +$%.2f%n",
                     Thread.currentThread().getName(), transactionId, bonus);
         }
 
