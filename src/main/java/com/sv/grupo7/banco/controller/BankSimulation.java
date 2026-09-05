@@ -59,7 +59,7 @@ public class BankSimulation {
         }
 
         // 7. Apagar pools y reportar auditoría
-        banks.forEach(Bank::shutdown);   // <-- rotura intencional S8
+        banks.forEach(Bank::shutdown);
         System.out.printf("%n=== RESUMEN: %d exitosas | %d fallidas | %d revertidas ===%n",
                 ok, failed, rolled);
         banks.forEach(Bank::printAuditReport);
