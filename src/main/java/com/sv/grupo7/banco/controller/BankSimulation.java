@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 
 public class BankSimulation {
 
-    private static final int TOTAL_TRANSACCIONES = 0;
+    private static final int TOTAL_TRANSACCIONES = 100;
 
     public static void main(String[] args) {
         System.out.println("=== SIMULACIÓN MULTIBANCO CONCURRENTE — GRUPO 7 ===\n");
