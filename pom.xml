@@ -17,8 +17,8 @@
         <junit.version>5.10.2</junit.version>
     </properties>
 
-    <dependencies>
-        <dependency>
+        <dependencies>
+            <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
