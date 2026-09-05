@@ -6,7 +6,7 @@ import com.sv.grupo7.banco.entities.Receipt;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public abstract class Transaction implements Runnable {   // <-- rotura intencional S8
+public abstract class Transaction implements Callable<Receipt> {
 
     protected final String transactionId;
     protected final String type;
