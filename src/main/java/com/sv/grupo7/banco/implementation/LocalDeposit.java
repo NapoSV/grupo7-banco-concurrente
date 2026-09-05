@@ -29,7 +29,7 @@ public class LocalDeposit extends Transaction {
                 Thread.currentThread().getName(), transactionId,
                 amount, account.getAccountNumber(), account.getClientId());
 
-        account.withdraw(amount); //Rotura intencional (deberia ser deposit)
+        account.deposit(amount);
 
         // Bonificacion del 1% si el saldo resultante supera $1 000
         if (account.getBalance() >= 1000.0) {
