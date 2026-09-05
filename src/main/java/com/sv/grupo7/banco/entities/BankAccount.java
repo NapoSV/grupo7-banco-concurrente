@@ -43,7 +43,7 @@ public class BankAccount implements Serializable {
     public synchronized void deposit(double amount) {
         if (amount > 0) balance += amount;
     }
-    }
+    
     @Override
     public String toString() {
         return accountNumber + " (cliente " + clientId + ") => $" + String.format("%.2f", balance);
