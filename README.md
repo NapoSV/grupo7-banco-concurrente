@@ -4,7 +4,7 @@
 [![Java](https://img.shields.io/badge/Java-21%2B-blue.svg)](https://adoptium.net/)
 
 **Universidad Evangélica de El Salvador** · Facultad de Ingeniería · Ingeniería en Desarrollo de Software y Ciencia de Datos
-**Materia:** Programación II · **Semana:** 7 · **Facilitador:** Ing. Daniel Enrique Guevara Gómez
+**Materia:** Programación II · **Semanas:** 7 y 8 · **Facilitador:** Ing. Daniel Enrique Guevara Gómez
 
 ---
 
@@ -70,21 +70,19 @@ Los comprobantes se guardan como `transacciones_finalizadas/receta_<UUID>.dat`.
 
 ## Equipo del Grupo 7
 
-Ver tabla completa de asignación de tareas en [`docs/asignacion_tareas_grupo7.csv`](docs/asignacion_tareas_grupo7.csv) y la guía paso a paso para cada integrante en [`docs/GUIA_INTEGRANTES.md`](docs/GUIA_INTEGRANTES.md).
-
-| # | Integrante | Tarea |
-|---|---|---|
-| 1 | LOPEZ RUIZ HECTOR NAPOLEON | `BankSimulation` + integración |
-| 2 | VIGIL RAMIREZ ALEJANDRO ANTONIO | `Bank` |
-| 3 | ORELLANA ROJAS BAYRON ALEXANDER | `Transaction` (abstracta) |
-| 4 | DIAZ SANTOS ZAIR BENETT | `LocalWithdraw` |
-| 5 | FLORES HERNANDEZ WALTER ALEJANDRO | Diagrama UML |
-| 6 | MELGAR RIVAS WILLIAM ARIEL | `LocalDeposit` |
-| 7 | MERINO VENTURA ALEJANDRO SEBASTIAN | `BankAccount` |
-| 8 | FUENTES ORTIZ ERIKA ALEXANDRA | Pruebas unitarias JUnit 5 |
-| 9 | VASQUEZ AMAYA WALTER AMILCAR | `DaoTransaction` + `MovementsViewer` (Swing) |
-| 10 | VENTURA VELASQUEZ CARLOS MARIO | `InterBankTransfer` + `LocalTransfer` |
-| 11 | SANCHEZ MENJIVAR NICOLE NOHEMY | `Receipt` + `Client` |
+| # | Nombre completo | CIF | Usuario GitHub | Tarea |
+|---|---|---|---|---|
+| 1 | LOPEZ RUIZ HECTOR NAPOLEON | 2026010132 | [@NapoSV](https://github.com/NapoSV) | `BankSimulation` + integración |
+| 2 | VIGIL RAMIREZ ALEJANDRO ANTONIO | 2026010204 | [@Alejandro08vigil-dotcom](https://github.com/Alejandro08vigil-dotcom) | `Bank` |
+| 3 | ORELLANA ROJAS BAYRON ALEXANDER | 2026011707 | [@crislomsu](https://github.com/crislomsu) | `Transaction` (abstracta) |
+| 4 | DIAZ SANTOS ZAIR BENETT | 2026010796 | [@Djmaanco](https://github.com/Djmaanco) | `LocalWithdraw` |
+| 5 | FLORES HERNANDEZ WALTER ALEJANDRO | 2026011012 | [@floreswa90](https://github.com/floreswa90) | Diagrama UML |
+| 6 | MELGAR RIVAS WILLIAM ARIEL | 2026011736 | [@wamr01](https://github.com/wamr01) | `LocalDeposit` |
+| 7 | MERINO VENTURA ALEJANDRO SEBASTIAN | 2026020122 | [@mknz05](https://github.com/mknz05) | `BankAccount` |
+| 8 | FUENTES ORTIZ ERIKA ALEXANDRA | 2026011709 | [@fuenteserika221-spec](https://github.com/fuenteserika221-spec) | Pruebas unitarias JUnit 5 |
+| 9 | VASQUEZ AMAYA WALTER AMILCAR | 2026010068 | [@WaltArt94](https://github.com/WaltArt94) | `DaoTransaction` + `MovementsViewer` (Swing) |
+| 10 | VENTURA VELASQUEZ CARLOS MARIO | 2026011585 | [@mdealerdude](https://github.com/mdealerdude) | `InterBankTransfer` + `LocalTransfer` |
+| 11 | SANCHEZ MENJIVAR NICOLE NOHEMY | 2026010813 | [@nicolenohemysanchez](https://github.com/nicolenohemysanchez) | `Receipt` + `Client` |
 
 ---
 
