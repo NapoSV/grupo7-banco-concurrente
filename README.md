@@ -86,24 +86,6 @@ Los comprobantes se guardan como `transacciones_finalizadas/receta_<UUID>.dat`.
 
 ---
 
-## Flujo Git para el equipo
-
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/tarea-NN-<apellido>
-# ... implementar tu clase ...
-git add src/main/java/com/sv/grupo7/banco/<paquete>/<Archivo>.java
-git commit -m "feat(tareaNN): <descripción corta>"
-git push -u origin feature/tarea-NN-<apellido>
-```
-
-**Reglas:**
-- Nadie hace merge — solo `push` a la rama personal. Las PRs las abre Héctor.
-- Package obligatorio: `com.sv.grupo7.banco.*`
-- Sin secretos ni datos personales en el código.
-
----
-
 ## Licencia
 
 MIT — ver [`LICENSE`](LICENSE).
