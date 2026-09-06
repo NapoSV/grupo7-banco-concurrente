@@ -35,7 +35,7 @@ public class BankAccount implements Serializable {
     }
 
     public synchronized boolean withdraw(double amount) {
-        if (amount <= 0 || balance < amount) return false;
+        if (amount <= 0 || balance > amount) return false;   // <-- rotura intencional S8
         balance -= amount;
         return true;
     }
